@@ -1,11 +1,7 @@
-import * as parser from "@babel/parser"
-import generate from "@babel/generator"
+import { Node as BabelNode } from '@babel/types'
 import traverse from "@babel/traverse"
-import { TransformFnArgs } from '../types'
 
-export const transformsquaretoSQR = ({ code, parseOptions, generateOptions }: TransformFnArgs): string => {
-  const ast = parser.parse(code, parseOptions)
-
+export const transformsquaretoSQR = (ast: BabelNode): void => {
   traverse(ast, {
     enter(path) {
       if (path.node.type === 'ClassMethod' && path.node.key.type === 'Identifier' && path.node.key.name === 'componentWillMount') {
@@ -13,7 +9,4 @@ export const transformsquaretoSQR = ({ code, parseOptions, generateOptions }: Tr
       }
     }
   })
-
-  const { code: output } = generate(ast, generateOptions, code)
-  return output
 }
