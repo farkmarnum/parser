@@ -1,25 +1,46 @@
-export enum Delays {
-  Short = 500,
-  Medium = 2000,
-  Long = 5000,
-}
+import * as parser from "@babel/parser"
+import * as generate from "@babel/generator"
+import transformsList from './transforms'
+import { RefactorArgs } from './types'
 
-/**
- * Returns a Promise<string> that resolves after given time.
- *
- * @param {string} name - A name.
- * @param {number=} [delay=Delays.Medium] - Number of milliseconds to delay resolution of the Promise.
- * @returns {Promise<string>}
- */
-function delayedHello(
-  name: string,
-  delay: number = Delays.Medium,
-): Promise<string> {
-  return new Promise((resolve: (value?: string) => void) =>
-    setTimeout(() => resolve(`Hello, ${name}`), delay),
-  );
-}
+const parseOptions = {
+  sourceType: 'unambiguous',
+  ranges: true,
+  plugins: [
+    'jsx',
+  ],
+} as parser.ParserOptions
 
-export async function greeter(name: string): Promise<string> {
-  return await delayedHello(name, Delays.Long);
+const generateOptions = {
+  retainLines: true,
+  retainFunctionParens: true,
+} as generate.GeneratorOptions
+
+export const refactor = ({ code, transforms }: RefactorArgs): string =>
+  transforms.reduce((acc, fn) =>
+    fn({ code: acc, parseOptions, generateOptions }), code)
+
+/* ************************************************************************************************ */
+
+const code = `
+import React from 'react'
+
+class a extends React.Component {
+  componentWillMount(n) {
+    console.log(1)
+    return n * n
+    // test
+  }
+
+  render() {
+    return (
+      <div>
+        {this.props.name}
+      </div>
+    )
+  }
 }
+`
+
+const refactored = refactor({ code, transforms: transformsList })
+console.log(refactored)

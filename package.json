@@ -8,6 +8,10 @@
   "author": "Mark Farnum <mark.farnum@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@babel/generator": "^7.12.1",
+    "@babel/parser": "^7.12.3",
+    "@babel/traverse": "^7.12.1",
+    "@babel/types": "^7.12.1",
     "tslib": "^2.0.3"
   },
   "devDependencies": {
